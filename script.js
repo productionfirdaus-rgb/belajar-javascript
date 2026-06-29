@@ -1,4 +1,4 @@
-const API_URL = 'https://script.google.com/macros/s/AKfycbyRRo-Bsi0k3bQw2NmDX-W1VHYHViSYJ_XshqEtBDxj5lSgW1AyqocoZbV_70eJYA6v/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbzaAtjJVcfog6RYK8TIGKPMs0LA9YuBzRHiX9ft6E14itOAxUA3HMjaiMi8uH-GYh68/exec';
 
 // Cek nomor jersey saat diketik
 document.getElementById('nomorJersey').addEventListener('input', async function() {
