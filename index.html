@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pemesanan Jersey</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        body { background: #f0f2f5; padding: 20px; display: flex; justify-content: center; }
+        .container { max-width: 600px; width: 100%; background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #1a1a2e; }
+        .form-group { margin-bottom: 18px; }
+        label { display: block; font-weight: 600; margin-bottom: 5px; }
+        input, select, textarea { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 10px; }
+        .btn { width: 100%; padding: 14px; background: #4a90d9; color: white; border: none; border-radius: 10px; cursor: pointer; }
+        #result { display: none; padding: 15px; border-radius: 10px; margin-top: 15px; }
+        .sukses { background: #d4edda; color: #155724; }
+        .gagal { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏏 Pemesanan Jersey</h1>
+        <div class="form-group">
+            <label>Nama Pengirim</label>
+            <input type="text" id="namaPengirim" placeholder="Nama Anda" required>
+        </div>
+        <div class="form-group">
+            <label>Nama di Jersey</label>
+            <input type="text" id="namaJersey" placeholder="Nama di jersey" required>
+        </div>
+        <div class="form-group">
+            <label>Nomor Jersey</label>
+            <input type="number" id="nomorJersey" placeholder="Contoh: 10" required>
+            <small id="nomorInfo" style="color:#999;">Sistem cek ketersediaan</small>
+        </div>
+        <div class="form-group">
+            <label>Size</label>
+            <select id="size" required>
+                <option value="">-- Pilih --</option>
+                <option value="S">S</option>
+                <option value="M">M</option>
+                <option value="L">L</option>
+                <option value="XL">XL</option>
+                <option value="XXL">XXL</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Pilihan Jersey</label>
+            <select id="pilihanJersey" required>
+                <option value="">-- Pilih --</option>
+                <option value="Jersey 1 (Home)">Jersey 1 (Home)</option>
+                <option value="Jersey 2 (Away)">Jersey 2 (Away)</option>
+                <option value="Paket Home + Away">Paket Home + Away</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Keterangan (opsional)</label>
+            <textarea id="keterangan" rows="2"></textarea>
+        </div>
+        <div class="form-group">
+            <label>Nomor WhatsApp</label>
+            <input type="text" id="noWA" placeholder="Contoh: 08123456789" required>
+        </div>
+        <div class="form-group">
+            <label>Upload Bukti Pembayaran</label>
+            <input type="file" id="buktiFile" accept="image/*" required>
+        </div>
+        <button class="btn" id="submitBtn" onclick="prosesPemesanan()">Kirim Pemesanan</button>
+        <div id="result"></div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
