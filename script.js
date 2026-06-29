@@ -1,112 +1,130 @@
-const API_URL =https://script.google.com/macros/s/AKfycbwADVt7oYojmTGbT2giHJ3cDB4zDRA9nHybw53bsksJhT1MYLc3veU4oZo7HkNXgAAq/exec';
+// ============================================
+// KONFIGURASI
+// ============================================
+const API_URL = 'https://script.google.com/macros/s/AKfycbwADVt7oYojmTGbT2giHJ3cDB4zDRA9nHybw53bsksJhT1MYLc3veU4oZo7HkNXgAAq/exec';
 
+// Cek nomor jersey saat diketik
 document.getElementById('nomorJersey').addEventListener('input', async function() {
     const nomor = this.value;
+    const info = document.getElementById('nomorInfo');
+    
     if (nomor.length > 0) {
-        const res = await fetch(`${API_URL}?action=cekNomor&nomor=${nomor}`);
-        const data = await res.json();
-        const info = document.getElementById('nomorInfo');
-        if (data.tersedia) {
-            info.style.color = 'green';
-            info.textContent = '✓ Nomor tersedia';
-        } else {
-            info.style.color = 'red';
-            info.textContent = `✗ Dipakai oleh ${data.nama}`;
+        try {
+            const res = await fetch(`${API_URL}?action=cekNomor&nomor=${nomor}`);
+            const data = await res.json();
+            
+            if (data.tersedia) {
+                info.style.color = 'green';
+                info.textContent = '✓ Nomor tersedia';
+            } else {
+                info.style.color = 'red';
+                info.textContent = `✗ Dipakai oleh ${data.nama}`;
+            }
+        } catch (e) {
+            // Abaikan error saat mengetik
         }
     }
 });
 
-async function prosesPemesanan() {
+// Fungsi utama saat tombol diklik
+document.getElementById('submitBtn').addEventListener('click', async function() {
+    const btn = this;
     const namaPengirim = document.getElementById('namaPengirim').value;
     const namaJersey = document.getElementById('namaJersey').value;
     const nomorJersey = document.getElementById('nomorJersey').value;
     const size = document.getElementById('size').value;
     const pilihanJersey = document.getElementById('pilihanJersey').value;
+    const keterangan = document.getElementById('keterangan').value;
     const noWA = document.getElementById('noWA').value;
-    const file = document.getElementById('buktiFile').files[0];
+    const fileInput = document.getElementById('buktiFile');
     const resultDiv = document.getElementById('result');
-    const btn = document.getElementById('submitBtn');
 
-    // Validasi
-    if (!namaPengirim || !namaJersey || !nomorJersey || !size || !pilihanJersey || !noWA || !file) {
-        alert('Harap isi semua field!');
+    // Validasi wajib diisi
+    if (!namaPengirim || !namaJersey || !nomorJersey || !size || !pilihanJersey || !noWA || !fileInput.files[0]) {
+        alert('Harap isi semua field yang wajib!');
         return;
     }
 
+    // Nonaktifkan tombol agar tidak diklik 2 kali
     btn.disabled = true;
+    btn.textContent = '⏳ Memproses...';
     resultDiv.style.display = 'none';
 
     try {
-        // 1. Cek OCR (deteksi Yusuf Firdaus)
-        resultDiv.textContent = '⏳ Mengecek bukti pembayaran...';
+        // 1. OCR Cek gambar (deteksi Yusuf Firdaus)
         resultDiv.style.display = 'block';
-        const ocr = await Tesseract.recognize(file, 'ind');
+        resultDiv.className = '';
+        resultDiv.textContent = '⏳ Membaca bukti pembayaran... (tunggu beberapa detik)';
         
-        if (!ocr.data.text.toLowerCase().includes('yusuf firdaus')) {
+        const ocrResult = await Tesseract.recognize(fileInput.files[0], 'ind');
+        const teksGambar = ocrResult.data.text.toLowerCase();
+        
+        if (!teksGambar.includes('yusuf firdaus')) {
             resultDiv.className = 'gagal';
-            resultDiv.textContent = '❌ Bukti tidak valid (tidak ada tulisan "Yusuf Firdaus")';
-            resultDiv.style.display = 'block';
+            resultDiv.textContent = '❌ GAGAL: Tidak ditemukan tulisan "Yusuf Firdaus" di gambar.';
             btn.disabled = false;
+            btn.textContent = 'Kirim Pemesanan';
             return;
         }
 
-        // 2. Kirim ke spreadsheet (PERBAIKAN DI SINI)
-        resultDiv.textContent = '⏳ Menyimpan data...';
-        const data = { 
-            namaPengirim, 
-            namaJersey, 
-            nomorJersey, 
-            size, 
-            pilihanJersey, 
-            noWA,
-            keterangan: document.getElementById('keterangan').value || ''
+        // 2. Kirim data ke spreadsheet
+        resultDiv.textContent = '⏳ Menyimpan data ke database...';
+        
+        const data = {
+            namaPengirim: namaPengirim,
+            namaJersey: namaJersey,
+            nomorJersey: nomorJersey,
+            size: size,
+            pilihanJersey: pilihanJersey,
+            keterangan: keterangan || '-',
+            noWA: noWA
         };
 
-        // Ganti dengan fetch yang BENAR (tanpa mode: 'no-cors')
-        const res = await fetch(API_URL, {
+        const response = await fetch(API_URL, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ action: 'simpan', data: data })
         });
 
-        // 3. Tampilkan hasil
-        const result = await res.json();
-        if (result.status === 'sukses') {
+        const resultData = await response.json();
+
+        // 3. Handle hasil dari server
+        if (resultData.status === 'sukses') {
             resultDiv.className = 'sukses';
-            resultDiv.textContent = `✅ Pemesanan berhasil! Kode: ${result.kode}`;
+            resultDiv.textContent = `✅ BERHASIL! Kode pemesanan: ${resultData.kode}`;
             
-            // Buka WA otomatis ke admin dan user
+            // Kirim WA ke Admin & User
             const adminWA = '6287757639277';
             const userWA = noWA.replace(/^0/, '62');
-            const invoice = `Pesanan Baru\nKode: ${result.kode}\nNama: ${namaPengirim}\nNo Jersey: ${nomorJersey}`;
+            const pesanWA = `*PESANAN BARU JERSEY*\n\nKode: ${resultData.kode}\nNama: ${namaPengirim}\nJersey: ${namaJersey}\nNo: ${nomorJersey}\nSize: ${size}\nPaket: ${pilihanJersey}`;
             
-            window.open(`https://wa.me/${adminWA}?text=${encodeURIComponent(invoice)}`, '_blank');
-            window.open(`https://wa.me/${userWA}?text=${encodeURIComponent('✅ Pemesanan Anda berhasil!\n\n' + invoice)}`, '_blank');
+            window.open(`https://wa.me/${adminWA}?text=${encodeURIComponent(pesanWA)}`, '_blank');
+            window.open(`https://wa.me/${userWA}?text=${encodeURIComponent('✅ Pemesanan Anda berhasil!\n\n' + pesanWA)}`, '_blank');
             
-            // Reset form
+            // Reset form setelah berhasil
             document.getElementById('namaPengirim').value = '';
             document.getElementById('namaJersey').value = '';
             document.getElementById('nomorJersey').value = '';
             document.getElementById('size').value = '';
             document.getElementById('pilihanJersey').value = '';
+            document.getElementById('keterangan').value = '';
             document.getElementById('noWA').value = '';
             document.getElementById('buktiFile').value = '';
-        } else if (result.status === 'duplikat') {
+            
+        } else if (resultData.status === 'duplikat') {
             resultDiv.className = 'gagal';
-            resultDiv.textContent = `❌ Nomor ${nomorJersey} sudah dipakai oleh ${result.nama}!`;
+            resultDiv.textContent = `❌ GAGAL: Nomor ${nomorJersey} sudah dipakai oleh ${resultData.nama}.`;
         } else {
             resultDiv.className = 'gagal';
-            resultDiv.textContent = '❌ Gagal menyimpan data. Coba lagi.';
+            resultDiv.textContent = '❌ Terjadi kesalahan server. Coba lagi.';
         }
 
     } catch (error) {
-        console.error(error);
+        console.error('ERROR:', error);
         resultDiv.className = 'gagal';
-        resultDiv.textContent = '❌ Terjadi kesalahan koneksi. Cek console browser (F12).';
+        resultDiv.textContent = '❌ Error koneksi. Cek Console (F12) untuk detail.';
     } finally {
         btn.disabled = false;
-        resultDiv.style.display = 'block';
+        btn.textContent = 'Kirim Pemesanan';
     }
-}
+});
