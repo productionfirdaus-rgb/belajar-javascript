@@ -1,7 +1,7 @@
 // ============================================
 // KONFIGURASI
 // ============================================
-const API_URL = 'https://script.google.com/macros/s/AKfycbyPrcHKArkB_4_dQhh_Vj5oCuADq4UhX_W9k1N3S1Ae_hV2PdoKadFeMqO4lNxabcxs/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbzef1mOyS6KSAeIGVdKosI_m2PUWabt0sDO1wTJUrjkJk7cebTmrsuukrjCNOqy2jga/exec';
 
 // Cek nomor jersey saat diketik
 document.getElementById('nomorJersey').addEventListener('input', async function() {
