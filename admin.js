@@ -1,4 +1,4 @@
-const API_URL = 'https://script.google.com/macros/s/AKfycbzef1mOyS6KSAeIGVdKosI_m2PUWabt0sDO1wTJUrjkJk7cebTmrsuukrjCNOqy2jga/exec';
+const API_URL = 'hhttps://script.google.com/macros/s/AKfycbyRRo-Bsi0k3bQw2NmDX-W1VHYHViSYJ_XshqEtBDxj5lSgW1AyqocoZbV_70eJYA6v/exec';
 
 async function loadData() {
     const res = await fetch(`${API_URL}?action=ambilDataAdmin`);
