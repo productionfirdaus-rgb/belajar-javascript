@@ -1,4 +1,4 @@
-const API_URL = 'https://script.google.com/macros/s/AKfycbzaAtjJVcfog6RYK8TIGKPMs0LA9YuBzRHiX9ft6E14itOAxUA3HMjaiMi8uH-GYh68/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbxkWD9owyUKb0XBnsYb7taCSCPujedwL-7nNVisbWhLB4evAYondCHjffrMJDJ2nGQG/exec';
 
 // Cek nomor jersey saat diketik (fitur realtime)
 document.getElementById('nomorJersey').addEventListener('input', async function() {
