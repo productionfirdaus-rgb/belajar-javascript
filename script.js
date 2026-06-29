@@ -1,4 +1,4 @@
-const API_URL = https://script.google.com/macros/s/AKfycbyZnW0zYMb1nTEbUWvn98q-xu1qM4cGwAglwuoTQgyEV4MJxDACfbYE3ajFEZA8ws5O/exec';
+const API_URL =https://script.google.com/macros/s/AKfycbwADVt7oYojmTGbT2giHJ3cDB4zDRA9nHybw53bsksJhT1MYLc3veU4oZo7HkNXgAAq/exec';
 
 document.getElementById('nomorJersey').addEventListener('input', async function() {
     const nomor = this.value;
